@@ -14,7 +14,7 @@ export function calculateFinancials(yieldPrediction, crop) {
   
   // Let's use the actual predicted yield vs the maximum potential yield
   const basePotentialPerAcre = yieldPrediction.baseYield * 1.15; // Assuming optimal conditions yield ~15% above base
-  const maxPotentialTotal = basePotentialPerAcre * (yieldPrediction.total / yieldPrediction.perAcre); 
+  const maxPotentialTotal = basePotentialPerAcre * (yieldPrediction.total / (yieldPrediction.perAcre || 1)); 
   
   const expectedRevenue = yieldPrediction.total * pricePerQuintal;
   const maxRevenue = maxPotentialTotal * pricePerQuintal;

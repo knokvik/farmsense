@@ -10,7 +10,9 @@ const DICTIONARY = {
     predictionsTab: 'Predictions',
     listen: '🔊 Listen',
     stop: '🔇 Stop',
-    // We'll keep it simple for now, the real magic is the Voice Synthesis reading the dynamic text
+    homeLink: '← Home',
+    cropDoctorTitle: 'Crop Doctor AI',
+    cropDoctorDesc: 'Upload a photo of a sick plant for instant diagnosis.'
   },
   hi: {
     dashboardTitle: '📊 फार्म डैशबोर्ड',
@@ -19,6 +21,9 @@ const DICTIONARY = {
     predictionsTab: 'भविष्यवाणी',
     listen: '🔊 सुनें',
     stop: '🔇 रोकें',
+    homeLink: '← मुख्य पृष्ठ',
+    cropDoctorTitle: 'फसल डॉक्टर AI',
+    cropDoctorDesc: 'तुरंत निदान के लिए बीमार पौधे की फोटो अपलोड करें।'
   }
 };
 
