@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FarmSense Dashboard — Real-time weather data, crop advisory, and AI-powered yield predictions for your farm." />
+  <meta name="theme-color" content="#0c1222" />
+  <title>Dashboard — FarmSense</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/index.css" />
+  <script>
+    if (localStorage.getItem('theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+</head>
+<body>
+  <!-- ─── Background Canvas ─── -->
+  <div id="weather-bg" class="weather-bg"></div>
+
+  <!-- ─── App Root ─── -->
+  <div id="app">
+
+    <!-- ═══ NAVBAR ═══ -->
+    <nav id="navbar" class="navbar nav-scrolled">
+      <div class="nav-inner">
+        <a href="/" class="nav-brand">
+          <span class="nav-logo">🌾</span>
+          <span class="nav-title">Farm<span class="accent">Sense</span></span>
+        </a>
+        <div class="nav-links">
+          <a href="/" class="nav-link">← Home</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+          <span class="moon-icon">🌙</span>
+          <span class="sun-icon">☀️</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ═══ DASHBOARD HEADER ═══ -->
+    <div class="dash-header">
+      <div class="dash-header-inner">
+        <h1 class="dash-title">📊 Farm Dashboard</h1>
+        <p class="dash-subtitle" id="dash-location-label">Set your location to get started</p>
+      </div>
+    </div>
+
+    <!-- ═══ LOCATION INPUT ═══ -->
+    <section id="location-section" class="section location-section dash-location">
+      <div class="section-inner">
+        <div class="location-card glass-card">
+          <div class="location-methods">
+            <!-- GPS Button -->
+            <button id="gps-btn" class="location-btn gps-btn">
+              <div class="btn-icon-wrap">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+                </svg>
+              </div>
+              <div class="btn-text">
+                <span class="btn-label">Use GPS</span>
+                <span class="btn-hint">Most accurate</span>
+              </div>
+              <div class="gps-spinner hidden" id="gps-spinner">
+                <div class="spinner"></div>
+              </div>
+            </button>
+
+            <div class="location-divider">
+              <span>or</span>
+            </div>
+
+            <!-- Search Input -->
+            <div class="search-wrap">
+              <div class="search-input-group">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input 
+                  type="text" 
+                  id="location-search" 
+                  class="search-input" 
+                  placeholder="Search village, city or enter pincode..."
+                  autocomplete="off"
+                />
+                <button id="search-btn" class="search-submit">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+              <!-- Search Suggestions -->
+              <div id="search-suggestions" class="search-suggestions hidden"></div>
+            </div>
+          </div>
+
+          <!-- Active Location Display -->
+          <div id="active-location" class="active-location hidden">
+            <div class="location-info">
+              <span class="location-pin">📍</span>
+              <div>
+                <span class="location-name" id="location-name">—</span>
+                <span class="location-coords" id="location-coords">—</span>
+              </div>
+            </div>
+            <button id="change-location-btn" class="change-location-btn">Change</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DASHBOARD TABS ═══ -->
+    <div id="dashboard-tabs" class="dashboard-tabs hidden">
+      <div class="tabs-inner">
+        <button class="tab-btn active" data-tab="weather" id="tab-weather-btn">
+          <span class="tab-icon">🌦️</span>
+          <span class="tab-label">Weather</span>
+        </button>
+        <button class="tab-btn" data-tab="advisory" id="tab-advisory-btn">
+          <span class="tab-icon">🌱</span>
+          <span class="tab-label">Advisory</span>
+        </button>
+        <button class="tab-btn" data-tab="predictions" id="tab-predictions-btn">
+          <span class="tab-icon">🔮</span>
+          <span class="tab-label">Predictions</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ LOADING STATE ═══ -->
+    <div id="loading-state" class="loading-state hidden">
+      <div class="loading-card glass-card">
+        <div class="loading-animation">
+          <div class="cloud-loader">
+            <div class="cloud"></div>
+            <div class="rain-drops">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+        <p class="loading-text">Analyzing weather patterns for your farm...</p>
+      </div>
+    </div>
+
+    <!-- ═══ ERROR STATE ═══ -->
+    <div id="error-state" class="error-state hidden">
+      <div class="error-card glass-card">
+        <span class="error-icon">⚠️</span>
+        <p id="error-message" class="error-message">Something went wrong</p>
+        <button id="retry-btn" class="retry-btn">Try Again</button>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: WEATHER ═══ -->
+    <section id="tab-weather" class="tab-content section forecast-section hidden">
+      <div class="section-inner">
+        <!-- Quick Stats -->
+        <div id="quick-stats" class="quick-stats hidden">
+          <div class="stat-pill" id="stat-temp">
+            <span class="stat-icon">🌡️</span>
+            <span class="stat-value" id="stat-temp-val">--</span>
+            <span class="stat-label">Temperature</span>
+          </div>
+          <div class="stat-pill" id="stat-humidity">
+            <span class="stat-icon">💧</span>
+            <span class="stat-value" id="stat-humidity-val">--</span>
+            <span class="stat-label">Humidity</span>
+          </div>
+          <div class="stat-pill" id="stat-rain">
+            <span class="stat-icon">🌧️</span>
+            <span class="stat-value" id="stat-rain-val">--</span>
+            <span class="stat-label">Rain Chance</span>
+          </div>
+          <div class="stat-pill" id="stat-wind">
+            <span class="stat-icon">💨</span>
+            <span class="stat-value" id="stat-wind-val">--</span>
+            <span class="stat-label">Wind</span>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h2 class="section-title">🌦️ 7-Day Forecast</h2>
+          <p class="section-desc" id="forecast-location-label">—</p>
+        </div>
+
+        <!-- Today's Highlight -->
+        <div id="today-highlight" class="today-highlight glass-card">
+          <div class="today-main">
+            <div class="today-weather-icon" id="today-icon"></div>
+            <div class="today-temp">
+              <span class="today-temp-value" id="today-temp">--°</span>
+              <span class="today-condition" id="today-condition">--</span>
+            </div>
+          </div>
+          <div class="today-details">
+            <div class="today-detail">
+              <span class="detail-label">Feels Like</span>
+              <span class="detail-value" id="today-feels">--°</span>
+            </div>
+            <div class="today-detail">
+              <span class="detail-label">Humidity</span>
+              <span class="detail-value" id="today-humidity">--%</span>
+            </div>
+            <div class="today-detail">
+              <span class="detail-label">Wind</span>
+              <span class="detail-value" id="today-wind">-- km/h</span>
+            </div>
+            <div class="today-detail">
+              <span class="detail-label">UV Index</span>
+              <span class="detail-value" id="today-uv">--</span>
+            </div>
+            <div class="today-detail">
+              <span class="detail-label">Sunrise</span>
+              <span class="detail-value" id="today-sunrise">--:--</span>
+            </div>
+            <div class="today-detail">
+              <span class="detail-label">Sunset</span>
+              <span class="detail-value" id="today-sunset">--:--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forecast Cards Grid -->
+        <div id="forecast-grid" class="forecast-grid"></div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-card glass-card">
+            <h3 class="chart-title">🌡️ Temperature Trend</h3>
+            <div class="chart-wrap">
+              <canvas id="temp-chart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card glass-card">
+            <h3 class="chart-title">🌧️ Precipitation</h3>
+            <div class="chart-wrap">
+              <canvas id="precip-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card glass-card full-width">
+            <h3 class="chart-title">💧 Humidity & 💨 Wind</h3>
+            <div class="chart-wrap">
+              <canvas id="humidity-wind-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historical Comparison -->
+        <div id="historical-section" class="historical-inline hidden">
+          <div class="section-header" style="margin-top: 48px;">
+            <h2 class="section-title">📊 Historical Comparison</h2>
+            <p class="section-desc">This week vs same period last year</p>
+          </div>
+          <div id="historical-grid" class="historical-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TAB: ADVISORY ═══ -->
+    <section id="tab-advisory" class="tab-content section advisory-section hidden">
+      <div class="section-inner">
+        <div class="section-header">
+          <h2 class="section-title">🌱 Crop Advisory</h2>
+          <p class="section-desc">Select your crop for personalized farming advice</p>
+        </div>
+
+        <!-- Crop Selector -->
+        <div class="crop-selector glass-card">
+          <label for="crop-select" class="crop-label">Select Your Crop</label>
+          <div class="crop-select-wrap">
+            <select id="crop-select" class="crop-select">
+              <option value="">— Choose a crop —</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advisory Cards -->
+        <div id="advisory-cards" class="advisory-cards"></div>
+
+        <!-- Best Days Panel -->
+        <div id="best-days-panel" class="best-days-panel hidden">
+          <h3 class="panel-title">📅 Best Days This Week</h3>
+          <div id="best-days-grid" class="best-days-grid"></div>
+        </div>
+
+        <!-- Crop Risk Score -->
+        <div id="risk-score-card" class="risk-score-card glass-card hidden">
+          <h3 class="risk-title">Crop Stress Score</h3>
+          <div class="risk-gauge">
+            <div class="risk-meter">
+              <div class="risk-fill" id="risk-fill"></div>
+            </div>
+            <span class="risk-value" id="risk-value">--</span>
+          </div>
+          <p class="risk-desc" id="risk-desc">—</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TAB: PREDICTIONS ═══ -->
+    <section id="tab-predictions" class="tab-content section prediction-section hidden">
+      <div class="section-inner">
+        <div class="section-header">
+          <h2 class="section-title">🔮 AI Yield Prediction</h2>
+          <p class="section-desc">Enter your farm details to get personalized yield predictions</p>
+        </div>
+
+        <!-- Prediction Form renders here -->
+        <div id="prediction-container"></div>
+      </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="nav-logo">🌾</span>
+          <span>Farm<span class="accent">Sense</span></span>
+        </div>
+        <p class="footer-text">
+          Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> • 
+          Built for Indian Farmers • EVS Project 2026
+        </p>
+        <p class="footer-disclaimer">
+          Advisory insights are AI-generated suggestions. Always consult local agricultural officers for critical decisions.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/dashboard.js"></script>
+  <script>
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const isLight = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', isLight ? 'dark' : 'light');
+      localStorage.setItem('theme', isLight ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
