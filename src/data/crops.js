@@ -19,6 +19,7 @@ const crops = [
     humidityDiseaseMin: 85, // high humidity → blast risk
     windSprayMax: 15, // max wind for spraying (km/h)
     diseases: ['Rice blast', 'Sheath blight', 'Brown spot'],
+    msp: 2183, // INR per quintal
     tips: {
       irrigation: 'Maintain 5cm standing water during tillering stage',
       harvest: 'Harvest when 80% grains are golden-yellow',
@@ -39,6 +40,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 12,
     diseases: ['Rust', 'Karnal bunt', 'Powdery mildew'],
+    msp: 2275,
     tips: {
       irrigation: 'Critical irrigation at crown root, tillering, flowering stages',
       harvest: 'Harvest at 12-14% grain moisture',
@@ -59,6 +61,7 @@ const crops = [
     humidityDiseaseMin: 90,
     windSprayMax: 12,
     diseases: ['Red rot', 'Smut', 'Wilt'],
+    msp: 315, // per quintal FRP
     tips: {
       irrigation: 'Avoid waterlogging; furrow irrigation recommended',
       harvest: 'Harvest when Brix reading > 18%',
@@ -79,6 +82,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 10,
     diseases: ['Boll rot', 'Bacterial blight', 'Fusarium wilt'],
+    msp: 6620,
     tips: {
       irrigation: 'Drip irrigation at flowering is critical',
       harvest: 'Pick bolls when fully open and dry',
@@ -99,6 +103,7 @@ const crops = [
     humidityDiseaseMin: 85,
     windSprayMax: 12,
     diseases: ['Maydis leaf blight', 'Downy mildew', 'Stalk rot'],
+    msp: 2090,
     tips: {
       irrigation: 'Critical water need at tasseling/silking stage',
       harvest: 'Harvest when husk turns brown and kernels are dented',
@@ -119,6 +124,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 12,
     diseases: ['Rust', 'Yellow mosaic', 'Anthracnose'],
+    msp: 4600,
     tips: {
       irrigation: 'Avoid waterlogging; ensure proper drainage',
       harvest: 'Harvest when leaves drop and pods turn brown',
@@ -139,6 +145,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 12,
     diseases: ['Tikka leaf spot', 'Rust', 'Collar rot'],
+    msp: 6377,
     tips: {
       irrigation: 'Critical at pegging and pod filling stages',
       harvest: 'Harvest when inner shell color darkens',
@@ -159,6 +166,7 @@ const crops = [
     humidityDiseaseMin: 75,
     windSprayMax: 10,
     diseases: ['White rust', 'Alternaria blight', 'Downy mildew'],
+    msp: 5650,
     tips: {
       irrigation: 'First irrigation 25-30 days after sowing is critical',
       harvest: 'Harvest when 75% pods turn yellowish-brown',
@@ -179,6 +187,7 @@ const crops = [
     humidityDiseaseMin: 85,
     windSprayMax: 15,
     diseases: ['Downy mildew', 'Ergot', 'Smut'],
+    msp: 2500,
     tips: {
       irrigation: 'Drought tolerant but needs water at grain filling',
       harvest: 'Harvest when grains are hard and grey',
@@ -199,6 +208,7 @@ const crops = [
     humidityDiseaseMin: 85,
     windSprayMax: 15,
     diseases: ['Grain mold', 'Charcoal rot', 'Anthracnose'],
+    msp: 3180,
     tips: {
       irrigation: 'Drought tolerant; one irrigation at flowering helps',
       harvest: 'Harvest when birds start attacking heads',
@@ -219,6 +229,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 12,
     diseases: ['Fusarium wilt', 'Sterility mosaic', 'Pod borer'],
+    msp: 7000,
     tips: {
       irrigation: 'Generally rainfed; irrigate at flowering if dry spell',
       harvest: 'Harvest when 80% pods turn brown',
@@ -239,6 +250,7 @@ const crops = [
     humidityDiseaseMin: 75,
     windSprayMax: 10,
     diseases: ['Ascochyta blight', 'Fusarium wilt', 'Botrytis grey mould'],
+    msp: 5440,
     tips: {
       irrigation: 'Only 1-2 irrigations needed; avoid excess water',
       harvest: 'Harvest when plants turn yellow and pods dry',
@@ -259,6 +271,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 10,
     diseases: ['Late blight', 'Early blight', 'Bacterial wilt'],
+    msp: 1500, // Market average
     tips: {
       irrigation: 'Regular drip irrigation; mulch to conserve moisture',
       harvest: 'Harvest at breaker/pink stage for transport',
@@ -279,6 +292,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 10,
     diseases: ['Purple blotch', 'Stemphylium blight', 'Downy mildew'],
+    msp: 1200, // Market average
     tips: {
       irrigation: 'Stop irrigation 10-15 days before harvest',
       harvest: 'Harvest when 50% tops fall over',
@@ -299,6 +313,7 @@ const crops = [
     humidityDiseaseMin: 80,
     windSprayMax: 10,
     diseases: ['Late blight', 'Early blight', 'Common scab'],
+    msp: 1000, // Market average
     tips: {
       irrigation: 'Consistent moisture; earthing up at 30 days',
       harvest: 'Harvest 10-15 days after haulm cutting',

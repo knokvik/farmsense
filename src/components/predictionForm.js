@@ -6,6 +6,7 @@
 import crops from '../data/crops.js';
 import soils from '../data/soils.js';
 import { IRRIGATION_METHODS, generatePrediction } from '../services/prediction.js';
+import { calculateFinancials, formatCurrency } from '../services/market.js';
 
 /**
  * Render the prediction form into a container
@@ -179,6 +180,8 @@ function renderResults(container, result) {
 
   const { crop, soil, yieldPrediction, growthStage, weatherScore, soilScore, risks, reduction, recommendations, weatherSummary, irrigationMethod } = result;
 
+  const financials = calculateFinancials(yieldPrediction, crop);
+
   resultsContainer.innerHTML = `
     <!-- Weather Summary Strip -->
     <div class="pred-weather-strip glass-card">
@@ -268,6 +271,30 @@ function renderResults(container, result) {
         </div>
       </div>
     </div>
+
+    ${financials ? `
+    <!-- Financial Outlook Card -->
+    <div class="pred-financial-card glass-card" style="margin-bottom: 24px;">
+      <h3 class="pred-card-title">💰 Financial Outlook</h3>
+      <div class="financial-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div class="fin-item" style="padding: 16px; background: rgba(34, 197, 94, 0.1); border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.2);">
+          <span class="fin-label" style="display:block; font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">Expected Revenue</span>
+          <span class="fin-value" style="display:block; font-size:1.5rem; font-weight:700; color:var(--accent-main);">${formatCurrency(financials.expectedRevenue)}</span>
+          <span class="fin-sub" style="display:block; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Based on yield prediction</span>
+        </div>
+        <div class="fin-item" style="padding: 16px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);">
+          <span class="fin-label" style="display:block; font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">Estimated Value at Risk</span>
+          <span class="fin-value" style="display:block; font-size:1.5rem; font-weight:700; color:var(--red-500);">${formatCurrency(financials.estimatedLoss)}</span>
+          <span class="fin-sub" style="display:block; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Loss due to stress factors</span>
+        </div>
+        <div class="fin-item" style="padding: 16px; background: var(--bg-hover); border-radius: 8px;">
+          <span class="fin-label" style="display:block; font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">Current Market Price (Est.)</span>
+          <span class="fin-value" style="display:block; font-size:1.2rem; font-weight:600; color:var(--text-main);">${formatCurrency(financials.pricePerQuintal)}</span>
+          <span class="fin-sub" style="display:block; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Per Quintal</span>
+        </div>
+      </div>
+    </div>
+    ` : ''}
 
     <!-- Growth Stage Timeline -->
     <div class="pred-growth-card glass-card">
