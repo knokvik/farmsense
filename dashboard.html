@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#0c1222" />
   <title>Dashboard — FarmSense</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -32,8 +33,11 @@
           <span class="nav-title">Farm<span class="accent">Sense</span></span>
         </a>
         <div class="nav-links">
-          <a href="/" class="nav-link">← Home</a>
+          <a href="/" class="nav-link" data-i18n="homeLink">← Home</a>
         </div>
+        <button id="lang-toggle" class="lang-toggle-btn" aria-label="Toggle language">
+          <span class="lang-label">A/अ</span>
+        </button>
         <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
           <span class="moon-icon">🌙</span>
           <span class="sun-icon">☀️</span>
@@ -120,15 +124,15 @@
       <div class="tabs-inner">
         <button class="tab-btn active" data-tab="weather" id="tab-weather-btn">
           <span class="tab-icon">🌦️</span>
-          <span class="tab-label">Weather</span>
+          <span class="tab-label" data-i18n="weatherTab">Weather</span>
         </button>
         <button class="tab-btn" data-tab="advisory" id="tab-advisory-btn">
           <span class="tab-icon">🌱</span>
-          <span class="tab-label">Advisory</span>
+          <span class="tab-label" data-i18n="advisoryTab">Advisory</span>
         </button>
         <button class="tab-btn" data-tab="predictions" id="tab-predictions-btn">
           <span class="tab-icon">🔮</span>
-          <span class="tab-label">Predictions</span>
+          <span class="tab-label" data-i18n="predictionsTab">Predictions</span>
         </button>
       </div>
     </div>
@@ -291,6 +295,9 @@
           <div id="best-days-grid" class="best-days-grid"></div>
         </div>
 
+        <!-- Crop Doctor Container -->
+        <div id="crop-doctor-container"></div>
+
         <!-- Crop Risk Score -->
         <div id="risk-score-card" class="risk-score-card glass-card hidden">
           <h3 class="risk-title">Crop Stress Score</h3>
@@ -344,6 +351,14 @@
       root.setAttribute('data-theme', isLight ? 'dark' : 'light');
       localStorage.setItem('theme', isLight ? 'dark' : 'light');
     });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => console.log('SW registered:', registration))
+          .catch(error => console.log('SW registration failed:', error));
+      });
+    }
   </script>
 </body>
 </html>

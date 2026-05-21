@@ -11,6 +11,8 @@ import { renderTemperatureChart } from './charts/temperatureChart.js';
 import { renderPrecipitationChart } from './charts/precipitationChart.js';
 import { renderHumidityWindChart } from './charts/humidityWindChart.js';
 import { initPredictionForm } from './components/predictionForm.js';
+import { setLanguage, getLang, t, speakText, stopSpeaking } from './services/i18n.js';
+import { initCropDoctor } from './components/cropDoctor.js';
 
 // ─── State ───
 const state = {
@@ -30,6 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   populateCropSelect();
   initPredictionModule();
+  
+  // Initialize Crop Doctor
+  initCropDoctor('crop-doctor-container', () => {
+    return state.selectedCrop ? crops.find(c => c.id === state.selectedCrop) : null;
+  });
 
   // Check for saved location
   const saved = getSavedLocation();
@@ -123,6 +130,15 @@ function initEventListeners() {
   $('retry-btn').addEventListener('click', () => {
     if (state.location) {
       loadWeatherData(state.location.lat, state.location.lon);
+    }
+  });
+
+  // Language toggle
+  $('lang-toggle')?.addEventListener('click', () => {
+    const newLang = getLang() === 'en' ? 'hi' : 'en';
+    setLanguage(newLang);
+    if (state.forecast && state.selectedCrop) {
+      renderAdvisory();
     }
   });
 }
@@ -460,8 +476,19 @@ function renderAdvisory() {
       <ul class="advice-actions">
         ${adv.actions.map(a => `<li class="advice-action">${a}</li>`).join('')}
       </ul>
+      <div class="advice-footer" style="margin-top: 12px;">
+        <button class="listen-btn" data-text="${adv.body} ${adv.actions.join('. ')}">🔊 Listen</button>
+      </div>
     `;
     cardsContainer.appendChild(card);
+  });
+
+  // Attach listen events
+  document.querySelectorAll('.listen-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const text = e.target.getAttribute('data-text');
+      speakText(text);
+    });
   });
 
   // Best days
