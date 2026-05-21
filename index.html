@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#0c1222" />
   <title>FarmSense — Smart Weather for Smart Farming</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -277,6 +278,15 @@
   </div>
 
   <script type="module" src="/src/landing.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => console.log('SW registered:', registration))
+          .catch(error => console.log('SW registration failed:', error));
+      });
+    }
+  </script>
   <script>
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
       const root = document.documentElement;
