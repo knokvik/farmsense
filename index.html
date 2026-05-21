@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FarmSense — Hyper-local, AI-powered weather forecasts with crop-specific advisory and yield predictions for Indian farmers." />
+  <meta name="keywords" content="weather forecast, farming, India, crop advisory, agriculture, yield prediction, farmer weather app" />
+  <meta name="theme-color" content="#0c1222" />
+  <title>FarmSense — Smart Weather for Smart Farming</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/index.css" />
+  <script>
+    if (localStorage.getItem('theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+</head>
+<body>
+  <!-- ─── Animated Background ─── -->
+  <div id="landing-bg" class="landing-bg">
+    <canvas id="particle-canvas"></canvas>
+  </div>
+
+  <!-- ─── App Root ─── -->
+  <div id="app">
+
+    <!-- ═══ NAVBAR ═══ -->
+    <nav id="navbar" class="navbar">
+      <div class="nav-inner">
+        <a href="/" class="nav-brand">
+          <span class="nav-logo">🌾</span>
+          <span class="nav-title">Farm<span class="accent">Sense</span></span>
+        </a>
+        <div class="nav-links">
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#how-it-works" class="nav-link">How It Works</a>
+          <a href="#stats" class="nav-link">Impact</a>
+          <a href="/dashboard.html" class="nav-link cta-link">Open Dashboard →</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+          <span class="moon-icon">🌙</span>
+          <span class="sun-icon">☀️</span>
+        </button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="mobile-menu hidden">
+        <a href="#features" class="mobile-link">Features</a>
+        <a href="#how-it-works" class="mobile-link">How It Works</a>
+        <a href="#stats" class="mobile-link">Impact</a>
+        <a href="/dashboard.html" class="mobile-link cta-link">Open Dashboard →</a>
+      </div>
+    </nav>
+
+    <!-- ═══ HERO ═══ -->
+    <header id="hero" class="hero landing-hero">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          AI-Enhanced Weather Intelligence
+        </div>
+        <h1 class="hero-title">
+          Your Farm.<br/>
+          <span class="gradient-text">Your Weather.</span><br/>
+          Your Decision.
+        </h1>
+        <p class="hero-subtitle">
+          Hyper-local, GPS-accurate weather forecasts with crop-specific actionable insights and 
+          <strong>AI-powered yield predictions</strong> — built for Indian farmers, powered by science.
+        </p>
+        <div class="hero-cta-row">
+          <a href="/dashboard.html" class="btn-primary" id="hero-cta">
+            <span>🚀 Open Dashboard</span>
+          </a>
+          <a href="#features" class="btn-secondary">
+            <span>Learn More ↓</span>
+          </a>
+        </div>
+
+        <!-- Floating Weather Cards -->
+        <div class="hero-float-cards">
+          <div class="float-card fc-1">
+            <span class="fc-emoji">🌡️</span>
+            <span class="fc-val">34°C</span>
+            <span class="fc-lbl">Current</span>
+          </div>
+          <div class="float-card fc-2">
+            <span class="fc-emoji">💧</span>
+            <span class="fc-val">72%</span>
+            <span class="fc-lbl">Humidity</span>
+          </div>
+          <div class="float-card fc-3">
+            <span class="fc-emoji">🌧️</span>
+            <span class="fc-val">15mm</span>
+            <span class="fc-lbl">Rain</span>
+          </div>
+          <div class="float-card fc-4">
+            <span class="fc-emoji">🌾</span>
+            <span class="fc-val">+18%</span>
+            <span class="fc-lbl">Yield</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══ FEATURES ═══ -->
+    <section id="features" class="section features-section">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-badge">What We Offer</div>
+          <h2 class="section-title">Powerful Tools for <span class="gradient-text">Smart Farming</span></h2>
+          <p class="section-desc">Everything you need to make data-driven farming decisions</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card glass-card" id="feature-forecast">
+            <div class="feature-icon-wrap">
+              <span class="feature-icon">🌦️</span>
+              <div class="feature-glow glow-teal"></div>
+            </div>
+            <h3 class="feature-title">7-Day Weather Forecast</h3>
+            <p class="feature-desc">GPS-accurate, hourly weather data including temperature, rainfall probability, wind speed, humidity, UV index, and soil conditions.</p>
+            <div class="feature-tags">
+              <span class="feature-tag">Real-time</span>
+              <span class="feature-tag">GPS Accurate</span>
+              <span class="feature-tag">Hourly Data</span>
+            </div>
+          </div>
+
+          <div class="feature-card glass-card" id="feature-advisory">
+            <div class="feature-icon-wrap">
+              <span class="feature-icon">🌱</span>
+              <div class="feature-glow glow-emerald"></div>
+            </div>
+            <h3 class="feature-title">Crop Advisory Engine</h3>
+            <p class="feature-desc">Select your crop and get personalized alerts for heat stress, frost, irrigation needs, disease risk, and best days for planting or spraying.</p>
+            <div class="feature-tags">
+              <span class="feature-tag">15+ Crops</span>
+              <span class="feature-tag">Disease Alerts</span>
+              <span class="feature-tag">Best Days</span>
+            </div>
+          </div>
+
+          <div class="feature-card glass-card" id="feature-prediction">
+            <div class="feature-icon-wrap">
+              <span class="feature-icon">🔮</span>
+              <div class="feature-glow glow-amber"></div>
+            </div>
+            <h3 class="feature-title">AI Yield Prediction</h3>
+            <p class="feature-desc">Enter your farm details — crop, soil, area, irrigation — and get predicted yield, risk assessment, growth timeline, and reduction estimates.</p>
+            <div class="feature-tags">
+              <span class="feature-tag">Yield Forecast</span>
+              <span class="feature-tag">Risk Score</span>
+              <span class="feature-tag">9 Soil Types</span>
+            </div>
+          </div>
+
+          <div class="feature-card glass-card" id="feature-historical">
+            <div class="feature-icon-wrap">
+              <span class="feature-icon">📊</span>
+              <div class="feature-glow glow-sky"></div>
+            </div>
+            <h3 class="feature-title">Historical Trends</h3>
+            <p class="feature-desc">Compare current weather with the same period last year. Track temperature shifts, rainfall changes, and wind patterns to plan ahead.</p>
+            <div class="feature-tags">
+              <span class="feature-tag">Year-over-Year</span>
+              <span class="feature-tag">Visual Charts</span>
+              <span class="feature-tag">Trend Analysis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ HOW IT WORKS ═══ -->
+    <section id="how-it-works" class="section hiw-section">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-badge">Simple &amp; Powerful</div>
+          <h2 class="section-title">How <span class="gradient-text">FarmSense</span> Works</h2>
+          <p class="section-desc">Three simple steps to smarter farming decisions</p>
+        </div>
+
+        <div class="hiw-steps">
+          <div class="hiw-step">
+            <div class="hiw-number">01</div>
+            <div class="hiw-icon">📍</div>
+            <h3 class="hiw-title">Set Your Location</h3>
+            <p class="hiw-desc">Use GPS for pinpoint accuracy or search by village, city, or pincode. We fetch hyper-local weather data just for your farm.</p>
+          </div>
+          <div class="hiw-connector">
+            <div class="hiw-line"></div>
+            <div class="hiw-arrow">→</div>
+          </div>
+          <div class="hiw-step">
+            <div class="hiw-number">02</div>
+            <div class="hiw-icon">📊</div>
+            <h3 class="hiw-title">View Your Dashboard</h3>
+            <p class="hiw-desc">Get a 7-day forecast with interactive charts, crop-specific advisory, disease alerts, and best days for farming activities.</p>
+          </div>
+          <div class="hiw-connector">
+            <div class="hiw-line"></div>
+            <div class="hiw-arrow">→</div>
+          </div>
+          <div class="hiw-step">
+            <div class="hiw-number">03</div>
+            <div class="hiw-icon">🔮</div>
+            <h3 class="hiw-title">Get Predictions</h3>
+            <p class="hiw-desc">Enter your farm details to receive AI-powered yield predictions, risk assessments, and actionable recommendations for your crop.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ STATS ═══ -->
+    <section id="stats" class="section stats-section">
+      <div class="section-inner">
+        <div class="stats-grid">
+          <div class="stat-card glass-card">
+            <span class="stat-number" data-target="15">0</span>
+            <span class="stat-suffix">+</span>
+            <span class="stat-text">Crops Supported</span>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-number" data-target="9">0</span>
+            <span class="stat-suffix"></span>
+            <span class="stat-text">Soil Types</span>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-number" data-target="7">0</span>
+            <span class="stat-suffix">-Day</span>
+            <span class="stat-text">Forecast Range</span>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-number" data-target="100">0</span>
+            <span class="stat-suffix">%</span>
+            <span class="stat-text">Free & Open</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FINAL CTA ═══ -->
+    <section class="section cta-section">
+      <div class="section-inner">
+        <div class="cta-card glass-card">
+          <h2 class="cta-title">Ready to Farm <span class="gradient-text">Smarter</span>?</h2>
+          <p class="cta-desc">Access real-time weather data, crop advisory, and AI predictions — all for free.</p>
+          <a href="/dashboard.html" class="btn-primary btn-lg">
+            <span>🚀 Open Dashboard Now</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="nav-logo">🌾</span>
+          <span>Farm<span class="accent">Sense</span></span>
+        </div>
+        <p class="footer-text">
+          Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> • 
+          Built for Indian Farmers • EVS Project 2026
+        </p>
+        <p class="footer-disclaimer">
+          Advisory insights are AI-generated suggestions. Always consult local agricultural officers for critical decisions.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/landing.js"></script>
+  <script>
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const isLight = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', isLight ? 'dark' : 'light');
+      localStorage.setItem('theme', isLight ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
