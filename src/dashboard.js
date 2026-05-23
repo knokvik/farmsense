@@ -12,7 +12,7 @@ import { renderPrecipitationChart } from './charts/precipitationChart.js';
 import { renderHumidityWindChart } from './charts/humidityWindChart.js';
 import { initPredictionForm } from './components/predictionForm.js';
 import { setLanguage, getLang, t, speakText, stopSpeaking } from './services/i18n.js';
-import { initCropDoctor } from './components/cropDoctor.js';
+import { initCropDoctor, showMockResult } from './components/cropDoctor.js';
 
 // ─── State ───
 const state = {
@@ -137,8 +137,27 @@ function initEventListeners() {
   $('lang-toggle')?.addEventListener('click', () => {
     const newLang = getLang() === 'en' ? 'hi' : 'en';
     setLanguage(newLang);
-    if (state.forecast && state.selectedCrop) {
-      renderAdvisory();
+
+    // Re-populate crop list in selected language
+    populateCropSelect();
+
+    // Re-render weather forecast highlights and cards
+    if (state.forecast) {
+      renderDashboard();
+    }
+
+    // Re-initialize Crop Doctor UI so its headers and static text translate
+    initCropDoctor('crop-doctor-container', () => {
+      return state.selectedCrop ? crops.find(c => c.id === state.selectedCrop) : null;
+    });
+
+    // Translate dynamic Mock Diagnostic Results in-place if visible
+    const cdResult = $('cd-result');
+    if (cdResult && !cdResult.classList.contains('hidden') && state.selectedCrop) {
+      const crop = crops.find(c => c.id === state.selectedCrop);
+      if (crop) {
+        showMockResult(cdResult, crop);
+      }
     }
   });
 }
@@ -289,17 +308,26 @@ async function loadWeatherData(lat, lon) {
   hideError();
 
   try {
-    // Fetch forecast and historical in parallel
-    const [forecast, historical] = await Promise.all([
-      fetchForecast(lat, lon),
-      fetchHistorical(lat, lon).catch(() => null),
-    ]);
-
+    // Fetch forecast first to unblock UI immediately
+    const forecast = await fetchForecast(lat, lon);
     state.forecast = forecast;
-    state.historical = historical;
+    state.historical = null; // Reset old historical data
 
     showLoading(false);
     renderDashboard();
+
+    // Fetch historical comparison asynchronously in the background
+    fetchHistorical(lat, lon)
+      .then(historical => {
+        state.historical = historical;
+        if (historical && state.forecast) {
+          renderHistorical(state.forecast, historical);
+        }
+      })
+      .catch(err => {
+        console.warn('Historical weather data fetch failed or timed out:', err);
+      });
+
   } catch (err) {
     showLoading(false);
     showError(`Failed to fetch weather data: ${err.message}`);
@@ -358,7 +386,7 @@ function renderTodayHighlight(forecast) {
   const weather = getWeatherInfo(current.weather_code);
   $('today-icon').textContent = weather.icon;
   $('today-temp').textContent = `${Math.round(current.temperature_2m)}°C`;
-  $('today-condition').textContent = weather.desc;
+  $('today-condition').textContent = t(weather.desc) || weather.desc;
   $('today-feels').textContent = `${Math.round(current.apparent_temperature)}°C`;
   $('today-humidity').textContent = `${current.relative_humidity_2m}%`;
   $('today-wind').textContent = `${Math.round(current.wind_speed_10m)} km/h`;
@@ -392,8 +420,8 @@ function renderForecastGrid(forecast) {
     const weather = getWeatherInfo(daily.weather_code[i]);
     const isToday = date === today;
     const dt = new Date(date + 'T00:00:00');
-    const dayName = isToday ? 'Today' : dt.toLocaleDateString('en-IN', { weekday: 'short' });
-    const dateLabel = dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    const dayName = isToday ? t('Today') : dt.toLocaleDateString(t('per_acre') === 'प्रति एकड़' ? 'hi-IN' : 'en-IN', { weekday: 'short' });
+    const dateLabel = dt.toLocaleDateString(t('per_acre') === 'प्रति एकड़' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' });
     const rainProb = daily.precipitation_probability_max[i] || 0;
 
     const card = document.createElement('div');
@@ -429,12 +457,16 @@ function renderCharts(forecast) {
 // ─── Crop Advisory ───
 function populateCropSelect() {
   const select = $('crop-select');
+  if (!select) return;
+  const currentValue = select.value;
+  select.innerHTML = `<option value="" data-i18n="chooseCropOption">${t('chooseCropOption')}</option>`;
   crops.forEach(crop => {
     const opt = document.createElement('option');
     opt.value = crop.id;
-    opt.textContent = `${crop.emoji} ${crop.name}`;
+    opt.textContent = `${crop.emoji || '🌾'} ${t(crop.id)}`;
     select.appendChild(opt);
   });
+  select.value = currentValue;
 }
 
 function renderAdvisory() {
@@ -443,7 +475,7 @@ function renderAdvisory() {
       <div class="advice-card severity-safe">
         <div class="advice-header">
           <span class="advice-icon">🌱</span>
-          <span class="advice-title">Select a crop above to get personalized farming advice</span>
+          <span class="advice-title" data-i18n="selectCropAdvisoryDefault">${t('selectCropAdvisoryDefault')}</span>
         </div>
       </div>
     `;
@@ -462,7 +494,7 @@ function renderAdvisory() {
   result.advisories.forEach(adv => {
     const severityClass = `severity-${adv.severity}`;
     const badgeClass = `badge-${adv.severity}`;
-    const badgeLabel = adv.severity === 'safe' ? 'Safe' : adv.severity === 'caution' ? 'Caution' : 'Alert';
+    const badgeLabel = adv.severity === 'safe' ? t('Safe') : adv.severity === 'caution' ? t('Caution') : t('Alert');
 
     const card = document.createElement('div');
     card.className = `advice-card ${severityClass}`;
@@ -477,7 +509,7 @@ function renderAdvisory() {
         ${adv.actions.map(a => `<li class="advice-action">${a}</li>`).join('')}
       </ul>
       <div class="advice-footer" style="margin-top: 12px;">
-        <button class="listen-btn" data-text="${adv.body} ${adv.actions.join('. ')}">🔊 Listen</button>
+        <button class="listen-btn" data-text="${adv.body} ${adv.actions.join('. ')}">🔊 ${t('listen')}</button>
       </div>
     `;
     cardsContainer.appendChild(card);
@@ -550,28 +582,28 @@ function renderHistorical(forecast, historical) {
 
   const metrics = [
     {
-      title: '🌡️ Avg Max Temperature',
+      title: '🌡️ ' + t('statTemp') + ' (Avg Max)',
       currentVal: avg(currentDaily.temperature_2m_max),
       histVal: avg(histDaily.temperature_2m_max),
       unit: '°C',
       precision: 1,
     },
     {
-      title: '🌡️ Avg Min Temperature',
+      title: '🌡️ ' + t('statTemp') + ' (Avg Min)',
       currentVal: avg(currentDaily.temperature_2m_min),
       histVal: avg(histDaily.temperature_2m_min),
       unit: '°C',
       precision: 1,
     },
     {
-      title: '🌧️ Total Rainfall',
+      title: '🌧️ ' + t('precipitation') + ' (Total)',
       currentVal: sum(currentDaily.precipitation_sum),
       histVal: sum(histDaily.precipitation_sum),
       unit: 'mm',
       precision: 1,
     },
     {
-      title: '💨 Max Wind Speed',
+      title: '💨 ' + t('statWind') + ' (Max)',
       currentVal: Math.max(...(currentDaily.wind_speed_10m_max || [0])),
       histVal: Math.max(...(histDaily.wind_speed_10m_max || [0])),
       unit: 'km/h',
@@ -584,7 +616,11 @@ function renderHistorical(forecast, historical) {
     const absDiff = Math.abs(diff).toFixed(m.precision);
     const direction = diff > 0.5 ? 'up' : diff < -0.5 ? 'down' : 'neutral';
     const arrow = diff > 0.5 ? '↑' : diff < -0.5 ? '↓' : '→';
-    const label = diff > 0.5 ? `+${absDiff} ${m.unit}` : diff < -0.5 ? `-${absDiff} ${m.unit}` : 'Similar';
+    const label = diff > 0.5 
+      ? `+${absDiff} ${m.unit}` 
+      : diff < -0.5 
+        ? `-${absDiff} ${m.unit}` 
+        : (t('per_acre') === 'प्रति एकड़' ? 'समान' : 'Similar');
 
     const card = document.createElement('div');
     card.className = 'historical-card';
@@ -592,11 +628,11 @@ function renderHistorical(forecast, historical) {
       <div class="hc-title">${m.title}</div>
       <div class="hc-compare">
         <div class="hc-year">
-          <span class="hc-year-label">This Year</span>
+          <span class="hc-year-label">${t('This Year')}</span>
           <span class="hc-year-value">${m.currentVal.toFixed(m.precision)}${m.unit}</span>
         </div>
         <div class="hc-year">
-          <span class="hc-year-label">Last Year</span>
+          <span class="hc-year-label">${t('Last Year')}</span>
           <span class="hc-year-value">${m.histVal.toFixed(m.precision)}${m.unit}</span>
         </div>
       </div>

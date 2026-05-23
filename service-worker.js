@@ -7,7 +7,6 @@ const ASSETS_TO_CACHE = [
   '/public/favicon.svg',
   '/src/landing.js',
   '/src/dashboard.js',
-  '/src/main.js',
   '/src/data/crops.js',
   '/src/data/soils.js',
   '/src/services/weather.js',

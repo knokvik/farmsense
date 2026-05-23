@@ -3,6 +3,8 @@
  * Handles UI for pest/disease image upload and mock AI analysis
  */
 
+import { t } from '../services/i18n.js';
+
 export function initCropDoctor(containerId, getSelectedCrop) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -12,8 +14,8 @@ export function initCropDoctor(containerId, getSelectedCrop) {
       <div class="cd-header" style="display:flex; align-items:center; gap: 12px; margin-bottom: 16px;">
         <span class="cd-icon" style="font-size:2rem;">🩺</span>
         <div>
-          <h3 class="cd-title" style="margin:0; font-size:1.2rem; font-weight:600;" data-i18n="cropDoctorTitle">Crop Doctor AI</h3>
-          <p class="cd-desc" style="margin:0; font-size:0.9rem; color:var(--text-secondary);" data-i18n="cropDoctorDesc">Upload a photo of a sick plant for instant diagnosis.</p>
+          <h3 class="cd-title" style="margin:0; font-size:1.2rem; font-weight:600;" data-i18n="cropDoctorTitle">${t('cropDoctorTitle')}</h3>
+          <p class="cd-desc" style="margin:0; font-size:0.9rem; color:var(--text-secondary);" data-i18n="cropDoctorDesc">${t('cropDoctorDesc')}</p>
         </div>
       </div>
       
@@ -21,7 +23,7 @@ export function initCropDoctor(containerId, getSelectedCrop) {
         <input type="file" id="cd-file-input" accept="image/*" style="display:none;" />
         <div id="cd-upload-content">
           <span style="font-size: 2.5rem; margin-bottom: 12px; display:block;">📸</span>
-          <p style="margin:0; font-weight:500;">Tap to upload or take a photo</p>
+          <p style="margin:0; font-weight:500;" id="cd-upload-text">${t('tapToUpload')}</p>
         </div>
         
         <!-- Scanning Animation Overlay -->
@@ -29,7 +31,7 @@ export function initCropDoctor(containerId, getSelectedCrop) {
           <div style="width: 100px; height: 100px; border: 4px solid var(--accent-main); border-radius: 8px; position:relative;">
              <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:var(--accent-main); box-shadow: 0 0 10px var(--accent-main); animation: scanline 1.5s infinite ease-in-out;"></div>
           </div>
-          <p style="color:white; margin-top:16px; font-weight:600; animation: pulse 1s infinite;">Analyzing image...</p>
+          <p style="color:white; margin-top:16px; font-weight:600; animation: pulse 1s infinite;" id="cd-scanner-text">${t('analyzingImage')}</p>
         </div>
       </div>
 
@@ -70,7 +72,7 @@ export function initCropDoctor(containerId, getSelectedCrop) {
       const crop = getSelectedCrop();
       
       if (!crop) {
-        alert("Please select a crop at the top of the Advisory tab first.");
+        alert(t('pleaseSelectCropAlert'));
         fileInput.value = ''; // reset
         return;
       }
@@ -84,27 +86,31 @@ export function initCropDoctor(containerId, getSelectedCrop) {
         scanner.classList.add('hidden');
         showMockResult(resultDiv, crop);
         fileInput.value = ''; // reset
-      }, 2500);
+      }, 2000);
     }
   });
 }
 
-function showMockResult(container, crop) {
+export function showMockResult(container, crop) {
   // Grab a random disease from the crop's disease list
   const diseases = crop.diseases || ['General fungal infection'];
   const disease = diseases[Math.floor(Math.random() * diseases.length)];
   
+  // Translate disease name and crop name
+  const translatedDisease = t(disease) || disease;
+  const translatedCrop = t(crop.id);
+
   container.innerHTML = `
     <h4 style="margin:0 0 8px 0; color:var(--red-500); display:flex; align-items:center; gap:8px;">
-      <span>⚠️</span> High Confidence Match: ${disease}
+      <span>⚠️</span> ${t('highConfidenceMatch')}: ${translatedDisease}
     </h4>
     <p style="margin:0 0 12px 0; font-size:0.9rem; color:var(--text-secondary);">
-      Based on the visual symptoms (spots/lesions) and current weather parameters (high humidity), our AI models indicate a strong likelihood of <strong>${disease}</strong> for your ${crop.name}.
+      ${t('cropDoctorResultDesc')} <strong>${translatedDisease}</strong> ${t('per_acre') === 'प्रति एकड़' ? 'का है आपके ' : 'for your '} ${translatedCrop}.
     </p>
     <div style="padding:12px; background:rgba(34,197,94,0.1); border-left:4px solid var(--accent-main); border-radius:4px;">
-      <h5 style="margin:0 0 4px 0; color:var(--accent-main);">Recommended Action</h5>
+      <h5 style="margin:0 0 4px 0; color:var(--accent-main);">${t('recommendedAction')}</h5>
       <p style="margin:0; font-size:0.85rem;">
-        Apply a broad-spectrum fungicide (e.g., Mancozeb or Carbendazim) at 2g/liter of water. Avoid spraying if rain is expected within 4 hours.
+        ${t('cropDoctorResultAction')}
       </p>
     </div>
   `;

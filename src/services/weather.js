@@ -82,14 +82,18 @@ function setCache(key, data) {
 // ─── Fetch with retry ───
 async function fetchJSON(url, retries = 2) {
   for (let i = 0; i <= retries; i++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.reason || `HTTP ${res.status}`);
       }
       return await res.json();
     } catch (e) {
+      clearTimeout(timeoutId);
       if (i === retries) throw e;
       await new Promise(r => setTimeout(r, 1000 * (i + 1)));
     }

@@ -29,7 +29,7 @@
     <nav id="navbar" class="navbar nav-scrolled">
       <div class="nav-inner">
         <a href="/" class="nav-brand">
-          <span class="nav-logo">🌾</span>
+          <span class="nav-logo"></span>
           <span class="nav-title">Farm<span class="accent">Sense</span></span>
         </a>
         <div class="nav-links">
@@ -39,8 +39,8 @@
           <span class="lang-label">A/अ</span>
         </button>
         <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
-          <span class="moon-icon">🌙</span>
-          <span class="sun-icon">☀️</span>
+          <span class="moon-icon">Dark</span>
+          <span class="sun-icon">Light</span>
         </button>
       </div>
     </nav>
@@ -48,8 +48,8 @@
     <!-- ═══ DASHBOARD HEADER ═══ -->
     <div class="dash-header">
       <div class="dash-header-inner">
-        <h1 class="dash-title">📊 Farm Dashboard</h1>
-        <p class="dash-subtitle" id="dash-location-label">Set your location to get started</p>
+        <h1 class="dash-title" data-i18n="dashboardTitle">Farm Dashboard</h1>
+        <p class="dash-subtitle" id="dash-location-label" data-i18n="setLocationLabel">Set your location to get started</p>
       </div>
     </div>
 
@@ -67,8 +67,8 @@
                 </svg>
               </div>
               <div class="btn-text">
-                <span class="btn-label">Use GPS</span>
-                <span class="btn-hint">Most accurate</span>
+                <span class="btn-label" data-i18n="useGPS">Use GPS</span>
+                <span class="btn-hint" data-i18n="gpsHint">Most accurate</span>
               </div>
               <div class="gps-spinner hidden" id="gps-spinner">
                 <div class="spinner"></div>
@@ -76,7 +76,7 @@
             </button>
 
             <div class="location-divider">
-              <span>or</span>
+              <span data-i18n="dividerOr">or</span>
             </div>
 
             <!-- Search Input -->
@@ -91,6 +91,7 @@
                   id="location-search" 
                   class="search-input" 
                   placeholder="Search village, city or enter pincode..."
+                  data-i18n-placeholder="searchPlaceholder"
                   autocomplete="off"
                 />
                 <button id="search-btn" class="search-submit">
@@ -113,7 +114,7 @@
                 <span class="location-coords" id="location-coords">—</span>
               </div>
             </div>
-            <button id="change-location-btn" class="change-location-btn">Change</button>
+            <button id="change-location-btn" class="change-location-btn" data-i18n="changeBtn">Change</button>
           </div>
         </div>
       </div>
@@ -123,15 +124,12 @@
     <div id="dashboard-tabs" class="dashboard-tabs hidden">
       <div class="tabs-inner">
         <button class="tab-btn active" data-tab="weather" id="tab-weather-btn">
-          <span class="tab-icon">🌦️</span>
           <span class="tab-label" data-i18n="weatherTab">Weather</span>
         </button>
         <button class="tab-btn" data-tab="advisory" id="tab-advisory-btn">
-          <span class="tab-icon">🌱</span>
           <span class="tab-label" data-i18n="advisoryTab">Advisory</span>
         </button>
         <button class="tab-btn" data-tab="predictions" id="tab-predictions-btn">
-          <span class="tab-icon">🔮</span>
           <span class="tab-label" data-i18n="predictionsTab">Predictions</span>
         </button>
       </div>
@@ -148,7 +146,7 @@
             </div>
           </div>
         </div>
-        <p class="loading-text">Analyzing weather patterns for your farm...</p>
+        <p class="loading-text" data-i18n="loadingText">Analyzing weather patterns for your farm...</p>
       </div>
     </div>
 
@@ -156,8 +154,8 @@
     <div id="error-state" class="error-state hidden">
       <div class="error-card glass-card">
         <span class="error-icon">⚠️</span>
-        <p id="error-message" class="error-message">Something went wrong</p>
-        <button id="retry-btn" class="retry-btn">Try Again</button>
+        <p id="error-message" class="error-message" data-i18n="errorMsg">Something went wrong</p>
+        <button id="retry-btn" class="retry-btn" data-i18n="retryBtn">Try Again</button>
       </div>
     </div>
 
@@ -167,29 +165,25 @@
         <!-- Quick Stats -->
         <div id="quick-stats" class="quick-stats hidden">
           <div class="stat-pill" id="stat-temp">
-            <span class="stat-icon">🌡️</span>
             <span class="stat-value" id="stat-temp-val">--</span>
-            <span class="stat-label">Temperature</span>
+            <span class="stat-label" data-i18n="statTemp">Temperature</span>
           </div>
           <div class="stat-pill" id="stat-humidity">
-            <span class="stat-icon">💧</span>
             <span class="stat-value" id="stat-humidity-val">--</span>
-            <span class="stat-label">Humidity</span>
+            <span class="stat-label" data-i18n="statHumidity">Humidity</span>
           </div>
           <div class="stat-pill" id="stat-rain">
-            <span class="stat-icon">🌧️</span>
             <span class="stat-value" id="stat-rain-val">--</span>
-            <span class="stat-label">Rain Chance</span>
+            <span class="stat-label" data-i18n="statRain">Rain Chance</span>
           </div>
           <div class="stat-pill" id="stat-wind">
-            <span class="stat-icon">💨</span>
             <span class="stat-value" id="stat-wind-val">--</span>
-            <span class="stat-label">Wind</span>
+            <span class="stat-label" data-i18n="statWind">Wind</span>
           </div>
         </div>
 
         <div class="section-header">
-          <h2 class="section-title">🌦️ 7-Day Forecast</h2>
+          <h2 class="section-title" data-i18n="sevenDayForecast">7-Day Forecast</h2>
           <p class="section-desc" id="forecast-location-label">—</p>
         </div>
 
@@ -204,27 +198,27 @@
           </div>
           <div class="today-details">
             <div class="today-detail">
-              <span class="detail-label">Feels Like</span>
+              <span class="detail-label" data-i18n="feelsLike">Feels Like</span>
               <span class="detail-value" id="today-feels">--°</span>
             </div>
             <div class="today-detail">
-              <span class="detail-label">Humidity</span>
+              <span class="detail-label" data-i18n="humidity">Humidity</span>
               <span class="detail-value" id="today-humidity">--%</span>
             </div>
             <div class="today-detail">
-              <span class="detail-label">Wind</span>
+              <span class="detail-label" data-i18n="wind">Wind</span>
               <span class="detail-value" id="today-wind">-- km/h</span>
             </div>
             <div class="today-detail">
-              <span class="detail-label">UV Index</span>
+              <span class="detail-label" data-i18n="uvIndex">UV Index</span>
               <span class="detail-value" id="today-uv">--</span>
             </div>
             <div class="today-detail">
-              <span class="detail-label">Sunrise</span>
+              <span class="detail-label" data-i18n="sunrise">Sunrise</span>
               <span class="detail-value" id="today-sunrise">--:--</span>
             </div>
             <div class="today-detail">
-              <span class="detail-label">Sunset</span>
+              <span class="detail-label" data-i18n="sunset">Sunset</span>
               <span class="detail-value" id="today-sunset">--:--</span>
             </div>
           </div>
@@ -236,13 +230,13 @@
         <!-- Charts -->
         <div class="charts-row">
           <div class="chart-card glass-card">
-            <h3 class="chart-title">🌡️ Temperature Trend</h3>
+            <h3 class="chart-title" data-i18n="tempTrend">Temperature Trend</h3>
             <div class="chart-wrap">
               <canvas id="temp-chart"></canvas>
             </div>
           </div>
           <div class="chart-card glass-card">
-            <h3 class="chart-title">🌧️ Precipitation</h3>
+            <h3 class="chart-title" data-i18n="precipitation">Precipitation</h3>
             <div class="chart-wrap">
               <canvas id="precip-chart"></canvas>
             </div>
@@ -250,7 +244,7 @@
         </div>
         <div class="charts-row">
           <div class="chart-card glass-card full-width">
-            <h3 class="chart-title">💧 Humidity & 💨 Wind</h3>
+            <h3 class="chart-title" data-i18n="humidityWind">Humidity & Wind</h3>
             <div class="chart-wrap">
               <canvas id="humidity-wind-chart"></canvas>
             </div>
@@ -260,8 +254,8 @@
         <!-- Historical Comparison -->
         <div id="historical-section" class="historical-inline hidden">
           <div class="section-header" style="margin-top: 48px;">
-            <h2 class="section-title">📊 Historical Comparison</h2>
-            <p class="section-desc">This week vs same period last year</p>
+            <h2 class="section-title" data-i18n="historicalComparison">Historical Comparison</h2>
+            <p class="section-desc" data-i18n="historicalDesc">This week vs same period last year</p>
           </div>
           <div id="historical-grid" class="historical-grid"></div>
         </div>
@@ -272,16 +266,16 @@
     <section id="tab-advisory" class="tab-content section advisory-section hidden">
       <div class="section-inner">
         <div class="section-header">
-          <h2 class="section-title">🌱 Crop Advisory</h2>
-          <p class="section-desc">Select your crop for personalized farming advice</p>
+          <h2 class="section-title" data-i18n="cropAdvisory">Crop Advisory</h2>
+          <p class="section-desc" data-i18n="cropAdvisoryDesc">Select your crop for personalized farming advice</p>
         </div>
 
         <!-- Crop Selector -->
         <div class="crop-selector glass-card">
-          <label for="crop-select" class="crop-label">Select Your Crop</label>
+          <label for="crop-select" class="crop-label" data-i18n="selectCropLabel">Select Your Crop</label>
           <div class="crop-select-wrap">
             <select id="crop-select" class="crop-select">
-              <option value="">— Choose a crop —</option>
+              <option value="" data-i18n="chooseCropOption">— Choose a crop —</option>
             </select>
           </div>
         </div>
@@ -291,7 +285,7 @@
 
         <!-- Best Days Panel -->
         <div id="best-days-panel" class="best-days-panel hidden">
-          <h3 class="panel-title">📅 Best Days This Week</h3>
+          <h3 class="panel-title" data-i18n="bestDaysTitle">Best Days This Week</h3>
           <div id="best-days-grid" class="best-days-grid"></div>
         </div>
 
@@ -316,8 +310,8 @@
     <section id="tab-predictions" class="tab-content section prediction-section hidden">
       <div class="section-inner">
         <div class="section-header">
-          <h2 class="section-title">🔮 AI Yield Prediction</h2>
-          <p class="section-desc">Enter your farm details to get personalized yield predictions</p>
+          <h2 class="section-title" data-i18n="predictionsTitle">AI Yield Prediction</h2>
+          <p class="section-desc" data-i18n="predictionsDesc">Enter your farm details to get personalized yield predictions</p>
         </div>
 
         <!-- Prediction Form renders here -->
@@ -329,14 +323,14 @@
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-brand">
-          <span class="nav-logo">🌾</span>
+          <span class="nav-logo"></span>
           <span>Farm<span class="accent">Sense</span></span>
         </div>
-        <p class="footer-text">
+        <p class="footer-text" data-i18n="footerText">
           Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> • 
           Built for Indian Farmers • EVS Project 2026
         </p>
-        <p class="footer-disclaimer">
+        <p class="footer-disclaimer" data-i18n="footerDisclaimer">
           Advisory insights are AI-generated suggestions. Always consult local agricultural officers for critical decisions.
         </p>
       </div>

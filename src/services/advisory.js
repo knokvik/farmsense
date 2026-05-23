@@ -5,6 +5,7 @@
 
 import { getCropById } from '../data/crops.js';
 import { getWeatherInfo } from './weather.js';
+import { t } from './i18n.js';
 
 /**
  * Generate comprehensive advisory for a crop given forecast data
@@ -15,7 +16,7 @@ import { getWeatherInfo } from './weather.js';
 export function generateAdvisory(cropId, forecast) {
   const crop = getCropById(cropId);
   if (!crop || !forecast?.daily) {
-    return { advisories: [], bestDays: [], riskScore: 0, riskLevel: 'low', riskDesc: 'Select a crop to see advisory' };
+    return { advisories: [], bestDays: [], riskScore: 0, riskLevel: 'low', riskDesc: t('selectCropAdvisoryDefault') };
   }
 
   const daily = forecast.daily;
@@ -56,10 +57,10 @@ export function generateAdvisory(cropId, forecast) {
   const riskScore = Math.min(100, Math.round((riskPoints / maxRisk) * 100));
   const riskLevel = riskScore <= 30 ? 'low' : riskScore <= 65 ? 'medium' : 'high';
   const riskDesc = riskScore <= 30
-    ? '✅ Conditions are favorable for your crop. Continue regular practices.'
+    ? '✅ ' + t('conditionFavorableDefault')
     : riskScore <= 65
-      ? '⚠️ Some weather stress expected. Follow the advisories below carefully.'
-      : '🚨 High stress conditions ahead. Take immediate protective action.';
+      ? '⚠️ ' + t('weatherStressExpected')
+      : '🚨 ' + t('highStressAhead');
 
   // ─── Best Days ───
   const bestDays = calculateBestDays(crop, daily, days);
@@ -93,13 +94,13 @@ function analyzeTemperature(crop, daily, days) {
     advisories.push({
       icon: '🌡️',
       severity: heatDays >= 3 ? 'alert' : 'caution',
-      title: `Heat Stress Warning — ${heatDays} day${heatDays > 1 ? 's' : ''}`,
-      body: `Temperatures will exceed ${crop.heatStress}°C, which is above ${crop.name}'s heat tolerance. This can damage flowers, reduce fruit set, and slow growth.`,
+      title: t('heatStressTitle', { days: heatDays, s: heatDays > 1 ? 's' : '' }),
+      body: t('heatStressBody', { temp: crop.heatStress, crop: t(crop.id) }),
       actions: [
-        'Apply mulch to reduce soil temperature',
-        'Irrigate in early morning or late evening',
-        'Use shade nets if available',
-        'Avoid transplanting on hot days',
+        t('heatStressAction1'),
+        t('heatStressAction2'),
+        t('heatStressAction3'),
+        t('heatStressAction4'),
       ],
     });
   }
@@ -109,12 +110,12 @@ function analyzeTemperature(crop, daily, days) {
     advisories.push({
       icon: '❄️',
       severity: coldDays >= 2 ? 'alert' : 'caution',
-      title: `Cold/Frost Risk — ${coldDays} day${coldDays > 1 ? 's' : ''}`,
-      body: `Minimum temperatures will drop near or below ${crop.frostThreshold}°C. ${crop.name} is sensitive to cold at this level.`,
+      title: t('coldFrostTitle', { days: coldDays, s: coldDays > 1 ? 's' : '' }),
+      body: t('coldFrostBody', { temp: crop.frostThreshold, crop: t(crop.id) }),
       actions: [
-        'Cover young plants with plastic/straw at night',
-        'Irrigate fields in evening to retain soil warmth',
-        'Avoid pruning during cold spells',
+        t('coldFrostAction1'),
+        t('coldFrostAction2'),
+        t('coldFrostAction3'),
       ],
     });
   }
@@ -123,9 +124,9 @@ function analyzeTemperature(crop, daily, days) {
     advisories.push({
       icon: '🌡️',
       severity: 'safe',
-      title: 'Temperature — Ideal Range',
-      body: `Temperatures are within the optimal ${crop.tempOptMin}–${crop.tempOptMax}°C range for ${crop.name} for most of the week. Great growing conditions!`,
-      actions: ['Continue regular crop management'],
+      title: t('idealTempTitle'),
+      body: t('idealTempBody', { minOpt: crop.tempOptMin, maxOpt: crop.tempOptMax, crop: t(crop.id) }),
+      actions: [t('idealTempAction1')],
     });
   }
 
@@ -152,13 +153,13 @@ function analyzeRain(crop, daily, days) {
     advisories.push({
       icon: '⛈️',
       severity: 'alert',
-      title: `Heavy Rain Alert — ${heavyRainDays} day${heavyRainDays > 1 ? 's' : ''}`,
-      body: `Heavy rainfall (>30mm) expected on ${heavyDates.join(', ')}. Risk of waterlogging and crop damage for ${crop.name}.`,
+      title: t('heavyRainTitle', { days: heavyRainDays, s: heavyRainDays > 1 ? 's' : '' }),
+      body: t('heavyRainBody', { dates: heavyDates.join(', '), crop: t(crop.id) }),
       actions: [
-        'Ensure field drainage channels are clear',
-        'Postpone fertilizer/pesticide application',
-        'Harvest mature produce before heavy rain',
-        'Protect seedbeds with temporary covers',
+        t('heavyRainAction1'),
+        t('heavyRainAction2'),
+        t('heavyRainAction3'),
+        t('heavyRainAction4'),
       ],
     });
   }
@@ -168,21 +169,21 @@ function analyzeRain(crop, daily, days) {
     advisories.push({
       icon: '💧',
       severity: 'caution',
-      title: 'Irrigation Needed',
-      body: `Expected rainfall (${Math.round(totalRain)}mm) is ${Math.round(deficit)}mm short of ${crop.name}'s weekly water need (${crop.waterNeedWeekly}mm). ${dryDays} dry days ahead.`,
+      title: t('irrigationTitle'),
+      body: t('irrigationBody', { rain: Math.round(totalRain), deficit: Math.round(deficit), crop: t(crop.id), need: crop.waterNeedWeekly, dry: dryDays }),
       actions: [
-        `Plan irrigation to supplement ~${Math.round(deficit)}mm`,
-        crop.tips.irrigation,
-        'Water early morning to minimize evaporation',
+        t('irrigationAction1', { deficit: Math.round(deficit) }),
+        t(`${crop.id}_tip_irrigation`) || crop.tips.irrigation,
+        t('irrigationAction3'),
       ],
     });
   } else if (deficit <= 0 && heavyRainDays === 0) {
     advisories.push({
       icon: '💧',
       severity: 'safe',
-      title: 'Water Supply — Adequate',
-      body: `Expected rainfall of ${Math.round(totalRain)}mm meets ${crop.name}'s water requirement of ${crop.waterNeedWeekly}mm/week.`,
-      actions: ['No additional irrigation needed this week'],
+      title: t('waterAdequateTitle'),
+      body: t('waterAdequateBody', { rain: Math.round(totalRain), crop: t(crop.id), need: crop.waterNeedWeekly }),
+      actions: [t('waterAdequateAction1')],
     });
   }
 
@@ -208,13 +209,13 @@ function analyzeWind(crop, daily, days) {
     advisories.push({
       icon: '💨',
       severity: 'caution',
-      title: 'High Wind — Spraying Window Limited',
-      body: `Wind speeds will exceed ${crop.windSprayMax} km/h on ${highWindDays} days. Not suitable for pesticide/fertilizer spraying.`,
+      title: t('highWindTitle'),
+      body: t('highWindBody', { limit: crop.windSprayMax, days: highWindDays }),
       actions: [
         calmDays.length > 0
-          ? `Best days for spraying: ${calmDays.slice(0, 3).join(', ')}`
-          : 'Consider early morning spraying when winds are calmer',
-        'Stake tall plants to prevent lodging',
+          ? t('highWindActionCalm', { calm: calmDays.slice(0, 3).join(', ') })
+          : t('highWindActionMorning'),
+        t('highWindActionStake'),
       ],
     });
   }
@@ -224,12 +225,12 @@ function analyzeWind(crop, daily, days) {
     advisories.push({
       icon: '🌪️',
       severity: 'alert',
-      title: 'Strong Wind Warning',
-      body: `Average maximum wind speed is ${Math.round(avgWind)} km/h. Risk of physical crop damage and accelerated soil moisture loss.`,
+      title: t('strongWindTitle'),
+      body: t('strongWindBody', { wind: Math.round(avgWind) }),
       actions: [
-        'Install windbreaks if possible',
-        'Secure greenhouse/polytunnel structures',
-        'Delay transplanting to calmer period',
+        t('strongWindAction1'),
+        t('strongWindAction2'),
+        t('strongWindAction3'),
       ],
     });
   }
@@ -258,22 +259,22 @@ function analyzeDisease(crop, hourly, days) {
     advisories.push({
       icon: '🦠',
       severity: highHumPercent > 60 ? 'alert' : 'caution',
-      title: `Disease Risk — High Humidity (${highHumPercent}% of hours)`,
-      body: `Humidity will exceed ${crop.humidityDiseaseMin}% for ${highHumHours} hours this week. ${crop.name} is susceptible to: ${crop.diseases.join(', ')}.`,
+      title: t('diseaseRiskTitle', { percent: highHumPercent }),
+      body: t('diseaseRiskBody', { limit: crop.humidityDiseaseMin, hours: highHumHours, crop: t(crop.id), diseases: crop.diseases.map(d => t(d) || d).join(', ') }),
       actions: [
-        'Apply preventive fungicide during a dry window',
-        'Improve air circulation (wider spacing, remove lower leaves)',
-        'Monitor fields daily for early disease symptoms',
-        'Avoid overhead irrigation',
+        t('diseaseRiskAction1'),
+        t('diseaseRiskAction2'),
+        t('diseaseRiskAction3'),
+        t('diseaseRiskAction4'),
       ],
     });
   } else if (highHumPercent < 15) {
     advisories.push({
       icon: '🦠',
       severity: 'safe',
-      title: 'Disease Risk — Low',
-      body: `Humidity levels are mostly below the disease threshold for ${crop.name}. Low fungal disease pressure expected.`,
-      actions: ['Continue regular scouting'],
+      title: t('diseaseLowTitle'),
+      body: t('diseaseLowBody', { crop: t(crop.id) }),
+      actions: [t('diseaseLowAction1')],
     });
   }
 
@@ -291,12 +292,12 @@ function analyzeUV(crop, daily, days) {
     advisories.push({
       icon: '☀️',
       severity: highUVDays >= 4 ? 'caution' : 'safe',
-      title: `High UV Index — ${highUVDays} day${highUVDays > 1 ? 's' : ''}`,
-      body: 'Very high UV radiation can cause sunscald on fruits and accelerate moisture loss.',
+      title: t('highUVTitle', { days: highUVDays }),
+      body: t('highUVBody'),
       actions: [
-        'Use shade cloth for sensitive vegetables',
-        'Farmers: wear hats and protective clothing',
-        'Schedule field work in early morning/late afternoon',
+        t('highUVAction1'),
+        t('highUVAction2'),
+        t('highUVAction3'),
       ],
     });
   }
@@ -347,9 +348,9 @@ function calculateBestDays(crop, daily, days) {
 
   // Best day for each activity
   const activities = [
-    { key: 'plant', label: 'Planting / Transplanting', emoji: '🌱' },
-    { key: 'spray', label: 'Pesticide Spraying', emoji: '🧪' },
-    { key: 'harvest', label: 'Harvesting', emoji: '🫳' },
+    { key: 'plant', label: t('plantingActivity'), emoji: '🌱' },
+    { key: 'spray', label: t('sprayingActivity'), emoji: '🧪' },
+    { key: 'harvest', label: t('harvestingActivity'), emoji: '🫳' },
   ];
 
   for (const activity of activities) {
@@ -360,7 +361,7 @@ function calculateBestDays(crop, daily, days) {
         activity: activity.label,
         emoji: activity.emoji,
         day: best.day,
-        reason: `Low rain (${Math.round(best.rain)}mm), wind ${Math.round(best.wind)} km/h`,
+        reason: t('bestDayReason', { rain: Math.round(best.rain), wind: Math.round(best.wind) }),
         score: best[activity.key],
       });
     }
@@ -372,5 +373,6 @@ function calculateBestDays(crop, daily, days) {
 // ─── Helper ───
 function formatDay(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
+  // Format based on current language
+  return d.toLocaleDateString(t('per_acre') === 'प्रति एकड़' ? 'hi-IN' : 'en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
 }
