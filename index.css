@@ -1671,22 +1671,23 @@ a:hover {
 .btn-lg { padding: 16px 32px; font-size: 1.1rem; }
 .hero-cta-row { display: flex; gap: 16px; justify-content: center; margin-bottom: 60px; }
 
-.hero-float-cards { position: relative; max-width: 520px; margin: 20px auto 0; height: 120px; display: flex; justify-content: space-around; gap: 12px; }
+.hero-float-cards { position: relative; max-width: 580px; margin: 40px auto 0; height: 160px; display: flex; justify-content: space-around; gap: 16px; }
 .float-card {
   --offset-y: 0px;
   background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
-  padding: 14px 18px; border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center;
+  padding: 18px 24px; border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center;
   box-shadow: var(--shadow-md); animation: floatCard 4.5s ease-in-out infinite;
   transform: translateY(var(--offset-y));
   transition: transform 0.3s;
+  min-width: 105px;
 }
 .fc-1 { --offset-y: 15px; }
 .fc-2 { --offset-y: -15px; animation-delay: 1.1s; }
 .fc-3 { --offset-y: 5px; animation-delay: 2.2s; }
 .fc-4 { --offset-y: -25px; animation-delay: 3.3s; }
-.fc-emoji { font-size: 1.5rem; margin-bottom: 4px; }
-.fc-val { font-weight: 700; font-size: 1.1rem; }
-.fc-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+.fc-emoji { font-size: 1.8rem; margin-bottom: 8px; }
+.fc-val { font-weight: 700; font-size: 1.25rem; margin-bottom: 4px; }
+.fc-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
 @keyframes floatCard {
   0%, 100% { transform: translateY(var(--offset-y)); }
